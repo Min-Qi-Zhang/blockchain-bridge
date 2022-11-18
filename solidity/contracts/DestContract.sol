@@ -22,8 +22,10 @@ contract DestContract {
     /**
      * @dev Set message on destination chain
      * @param _message the message to set
+     * param merkle_tree merkle_tree
      */
     function setMessage(string memory _message) public {
+        // validate merkle_tree
         message = _message;
         emit UpdateMessage(msg.sender, _message);
     }

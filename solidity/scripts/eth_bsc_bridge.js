@@ -23,6 +23,8 @@ origin_contract.on("UpdateMessage", async (from, to, message, event) => {
         console.log("From: ", from);
         console.log("To: ", to);
 
+        console.log(event);
+
         console.log("Preparing for transaction...");
         const tx = dest_contract.methods.setMessage(message);
 
