@@ -10,6 +10,8 @@ Compile the contracts:
 cd solidity && npx hardhat compile
 ```
 
+Create `.env` file under `/solidity` and copy content from `env_template`, fill in the values for those variables.
+
 Run the bridge:
 ```
 cd solidity && node scripts/eth_bsc_bridge.js
