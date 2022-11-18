@@ -1,5 +1,15 @@
 # blockchain-bridge
 
+Setup:
+```
+cd solidity && npm i
+```
+
+Compile the contracts:
+```
+cd solidity && npx hardhat compile
+```
+
 Run the bridge:
 ```
 cd solidity && node scripts/eth_bsc_bridge.js
