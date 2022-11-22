@@ -17,16 +17,42 @@ const origin_contract = new ethers.Contract(ORIGIN_CONTRACT_ADDRESS, OriginContr
 const dest_contract = new web3Bsc.eth.Contract(DestContract.abi, DEST_CONTRACT_ADDRESS);
 
 console.log("Listening to UpdateMessage event...");
-origin_contract.on("UpdateMessage", async (from, to, message, event) => {
-    try {
-        console.log("New message: ", message);
-        console.log("From: ", from);
-        console.log("To: ", to);
+origin_contract.on("MessageSent", recordMessageSent);
+origin_contract.on("MerkleRoot", recordMerkleRoot);
 
-        console.log(event);
+merkleTreeSize = 3;
+messageSent = [];
+merkleRoot = "";
+const recordMessageSent = async (messageId, sender, message, hash, event) => {
+    try {
+        console.log("New message on source chain: ", JSON.stringify({ messageId, sender, message, hash}));
+        messageSent.push({ messageId, sender, message, hash})
+        if (messageSent.length == merkleTreeSize - 1) {
+            messageSent.forEach((message, messageIndex) => {
+                sendMessage(messageIndex, message.messageId, message.sender, message.message, message.hash);
+            });
+            messageSent = []
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const recordMerkleRoot = async (messageId, merkleTreeSize, rootHash, event) => {
+    try {
+        console.log("New merkleRoot: ", JSON.stringify({ messageId, merkleTreeSize, rootHash}));
+        merkleRoot = rootHash
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+const sendMessage = async (messageIndex, messageId, sender, message, hash, event) => {
+    try {
+        console.log("Sending new message to target chain: ", JSON.stringify({ messageId, sender, message, hash}));
 
         console.log("Preparing for transaction...");
-        const tx = dest_contract.methods.setMessage(message);
+        const tx = dest_contract.methods.receiveMessage(messageSent, merkleRoot, messageIndex, messageId, sender, message);
 
         const gasPrice = await web3Bsc.eth.getGasPrice();
         const gasCost = await tx.estimateGas({from: admin.address});
@@ -57,5 +83,4 @@ origin_contract.on("UpdateMessage", async (from, to, message, event) => {
     } catch (err) {
         console.log(err);
     }
-    
-});
+}
