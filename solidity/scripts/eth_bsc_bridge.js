@@ -23,12 +23,6 @@ const recordMessageSent = async (messageId, sender, message, hash, event) => {
     try {
         console.log("New message on source chain: ", JSON.stringify({ messageId, sender, message, hash}));
         messageSent.push({ messageId, sender, message, hash})
-        if (messageSent.length == merkleTreeSize - 1) {
-            messageSent.forEach((message, messageIndex) => {
-                sendMessage(messageIndex, message.messageId, message.sender, message.message, message.hash);
-            });
-            messageSent = []
-        }
     } catch (err) {
         console.log(err);
     }
@@ -38,17 +32,24 @@ const recordMerkleRoot = async (messageId, merkleTreeSize, rootHash, event) => {
     try {
         console.log("New merkleRoot: ", JSON.stringify({ messageId, merkleTreeSize, rootHash}));
         merkleRoot = rootHash
+        if (messageSent.length == merkleTreeSize - 1) {
+            await messageSent.forEach(async (message, messageIndex) => {
+                await sendMessage(messageIndex, message.messageId, message.sender, message.message);
+            });
+            messageSent = []
+        }
     } catch (err) {
         console.log(err);
     }
 }
 
-const sendMessage = async (messageIndex, messageId, sender, message, hash, event) => {
+const sendMessage = async (messageIndex, messageId, sender, message) => {
     try {
-        console.log("Sending new message to target chain: ", JSON.stringify({ messageId, sender, message, hash}));
+        const merkleNeighbours = messageSent.map(message => message.hash)
+        console.log("Sending new message to target chain: ", JSON.stringify({ merkleNeighbours, merkleRoot, messageIndex, messageId, sender, message}));
 
         console.log("Preparing for transaction...");
-        const tx = dest_contract.methods.receiveMessage(messageSent, merkleRoot, messageIndex, messageId, sender, message);
+        const tx = dest_contract.methods.receiveMessage(merkleNeighbours, merkleRoot, messageIndex, messageId, sender, message);
 
         const gasPrice = await web3Bsc.eth.getGasPrice();
         const gasCost = await tx.estimateGas({from: admin.address});
