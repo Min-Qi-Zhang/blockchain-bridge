@@ -19,6 +19,9 @@ merkleTreeSize = 3;
 messageSent = [];
 merkleRoot = "";
 
+/**
+ * Record every message sent
+ */
 const recordMessageSent = async (messageId, sender, message, hash, event) => {
     try {
         console.log("New message on source chain: ", JSON.stringify({ messageId, sender, message, hash}));
@@ -31,8 +34,11 @@ const recordMessageSent = async (messageId, sender, message, hash, event) => {
 const recordMerkleRoot = async (messageId, merkleTreeSize, rootHash, event) => {
     try {
         console.log("New merkleRoot: ", JSON.stringify({ messageId, merkleTreeSize, rootHash}));
+        // record merkleRoot
         merkleRoot = rootHash
+        // 存到两个message的时候
         if (messageSent.length == merkleTreeSize - 1) {
+            // 把两个message都send出去
             await messageSent.forEach(async (message, messageIndex) => {
                 await sendMessage(messageIndex, message.messageId, message.sender, message.message);
             });
