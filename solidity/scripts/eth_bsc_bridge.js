@@ -65,12 +65,16 @@ const sendMessage = async (messageIndex, messageId, sender, message) => {
         const data = tx.encodeABI();
         console.log("data: ", data);
 
+        const nonce = await web3Bsc.eth.getTransactionCount(admin.address) + messageIndex;
+        console.log("nonce: ", nonce);
+
         const txData = {
             from: admin.address,
             to: DEST_CONTRACT_ADDRESS,
             data,
             gas: gasCost,
-            gasPrice
+            gasPrice,
+            nonce
         };
 
         console.log("Transaction ready to be sent");
@@ -79,8 +83,8 @@ const sendMessage = async (messageIndex, messageId, sender, message) => {
         console.log(`Transaction hash: ${receipt.transactionHash}`);
         console.log(`
             Processed transfer:
-            - from ${from}
-            - to ${to}
+            - from ${admin.address}
+            - to ${DEST_CONTRACT_ADDRESS}
             - message ${message}
         `);
     } catch (err) {
