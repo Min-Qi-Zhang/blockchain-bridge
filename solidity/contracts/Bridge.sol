@@ -2,8 +2,8 @@
 pragma solidity >=0.7 < 0.9.0;
 
 /**
- * @title DestContract
- * @dev Smart contract on Binance side
+ * @title Bridge
+ * @dev Arbitrary Message Bridge between EVM based blockchains
  */
 contract Bridge {
 
@@ -23,7 +23,6 @@ contract Bridge {
     event MerkleRoot(uint256 indexed messageId, uint256 merkleTreeSize, bytes32 rootHash);
 
     // receiving message
-    uint256 messageReceivedCounter;
     mapping(uint256 => Message) public messageReceived;
     event MessageReceived(uint256 indexed messageId, address sender, string message);
 
@@ -59,7 +58,7 @@ contract Bridge {
      * @param sender the sender of given message
      * @param message the message to receive
      */
-    function recieveMessage(bytes32[] memory merkleNeighbours, bytes32 merkleRoot, uint256 messageIndex, uint256 messageId, address sender, string memory message) public {
+    function receiveMessage(bytes32[] memory merkleNeighbours, bytes32 merkleRoot, uint256 messageIndex, uint256 messageId, address sender, string memory message) public {
         // re-compute the merkle root to validate message
         bytes32 messageHash = keccak256(abi.encodePacked(messageId, sender, message));
         bytes32 hash;

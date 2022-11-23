@@ -1,7 +1,7 @@
 async function main() {
-  const OriginContract = await ethers.getContractFactory("Bridge");
-  const origin_contract = await OriginContract.deploy("Deploying bridge");
-  console.log("Bridge is deployed at address: ", origin_contract.address);
+  const BridgeContract = await ethers.getContractFactory("Bridge");
+  const bridge_contract = await BridgeContract.deploy();
+  console.log("Bridge is deployed at address: ", bridge_contract.address);
 }
 
 main()

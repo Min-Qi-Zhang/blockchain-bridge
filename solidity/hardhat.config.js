@@ -11,6 +11,13 @@ module.exports = {
     goerli: {
       url: GOERLI_API_URL,
       accounts: [`0x${PRIVATE_KEY}`]
-    }
+    },
+    binance: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+      chainId: 97,
+      gasPrice: 20000000000,
+      accounts: [`0x${PRIVATE_KEY}`]
+    },
+
   }
 };

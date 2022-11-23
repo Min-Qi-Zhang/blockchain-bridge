@@ -6,23 +6,19 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const Web3 = require('web3');
 const ethers = require("ethers");
-const OriginContract = require("../artifacts/contracts/OriginContract.sol/OriginContract.json");
-const DestContract = require("../artifacts/contracts/DestContract.sol/DestContract.json");
+const BridgeContract = require("../artifacts/contracts/Bridge.sol/Bridge.json");
 
 const eth_provider = new ethers.providers.WebSocketProvider(GOERLI_WSS);
 const web3Bsc = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
 const admin = web3Bsc.eth.accounts.wallet.add(PRIVATE_KEY);
 
-const origin_contract = new ethers.Contract(ORIGIN_CONTRACT_ADDRESS, OriginContract.abi, eth_provider);
-const dest_contract = new web3Bsc.eth.Contract(DestContract.abi, DEST_CONTRACT_ADDRESS);
-
-console.log("Listening to UpdateMessage event...");
-origin_contract.on("MessageSent", recordMessageSent);
-origin_contract.on("MerkleRoot", recordMerkleRoot);
+const origin_contract = new ethers.Contract(ORIGIN_CONTRACT_ADDRESS, BridgeContract.abi, eth_provider);
+const dest_contract = new web3Bsc.eth.Contract(BridgeContract.abi, DEST_CONTRACT_ADDRESS);
 
 merkleTreeSize = 3;
 messageSent = [];
 merkleRoot = "";
+
 const recordMessageSent = async (messageId, sender, message, hash, event) => {
     try {
         console.log("New message on source chain: ", JSON.stringify({ messageId, sender, message, hash}));
@@ -84,3 +80,7 @@ const sendMessage = async (messageIndex, messageId, sender, message, hash, event
         console.log(err);
     }
 }
+
+console.log("Listening to SendMessage event...");
+origin_contract.on("MessageSent", recordMessageSent);
+origin_contract.on("MerkleRoot", recordMerkleRoot);
