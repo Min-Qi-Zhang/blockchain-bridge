@@ -22,10 +22,10 @@ merkleRoot = "";
 /**
  * Record every message sent
  */
-const recordMessageSent = async (messageId, sender, message, hash, event) => {
+const recordMessageSent = async (messageId, sender, message, messageIndex, proof, rootHash, event) => {
     try {
-        console.log("New message on source chain: ", JSON.stringify({ messageId, sender, message, hash}));
-        messageSent.push({ messageId, sender, message, hash})
+        console.log("New message on source chain: ", JSON.stringify({ messageId, sender, message }));
+        setTimeout(async () => { await sendMessage(proof, rootHash, messageIndex, messageId, sender, message); }, messageIndex * 2000);
     } catch (err) {
         console.log(err);
     }
@@ -49,13 +49,12 @@ const recordMerkleRoot = async (messageId, merkleTreeSize, rootHash, event) => {
     }
 }
 
-const sendMessage = async (messageIndex, messageId, sender, message) => {
+const sendMessage = async (proof, rootHash, messageIndex, messageId, sender, message) => {
     try {
-        const merkleNeighbours = messageSent.map(message => message.hash)
-        console.log("Sending new message to target chain: ", JSON.stringify({ merkleNeighbours, merkleRoot, messageIndex, messageId, sender, message}));
+        console.log("Sending new message to target chain: ", JSON.stringify({ proof, rootHash, messageIndex, messageId, sender, message}));
 
         console.log("Preparing for transaction...");
-        const tx = dest_contract.methods.receiveMessage(merkleNeighbours, merkleRoot, messageIndex, messageId, sender, message);
+        const tx = dest_contract.methods.receiveMessage(proof, rootHash, messageIndex, messageId, sender, message);
 
         const gasPrice = await web3Bsc.eth.getGasPrice();
         const gasCost = await tx.estimateGas({from: admin.address});
@@ -94,4 +93,4 @@ const sendMessage = async (messageIndex, messageId, sender, message) => {
 
 console.log("Listening to SendMessage event...");
 origin_contract.on("MessageSent", recordMessageSent);
-origin_contract.on("MerkleRoot", recordMerkleRoot);
+// origin_contract.on("MerkleRoot", recordMerkleRoot);
