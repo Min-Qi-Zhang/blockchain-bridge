@@ -51,6 +51,7 @@ const recordMerkleRoot = async (messageId, merkleTreeSize, rootHash, event) => {
 
 const sendMessage = async (proof, rootHash, messageIndex, messageId, sender, message) => {
     try {
+        if (messageIndex > 0) return;
         console.log("Sending new message to target chain: ", JSON.stringify({ proof, rootHash, messageIndex, messageId, sender, message}));
 
         console.log("Preparing for transaction...");
@@ -64,7 +65,7 @@ const sendMessage = async (proof, rootHash, messageIndex, messageId, sender, mes
         const data = tx.encodeABI();
         console.log("data: ", data);
 
-        const nonce = await web3Bsc.eth.getTransactionCount(admin.address) + messageIndex;
+        const nonce = await web3Bsc.eth.getTransactionCount(admin.address) + messageId;
         console.log("nonce: ", nonce);
 
         const txData = {

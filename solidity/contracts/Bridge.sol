@@ -8,6 +8,7 @@ pragma solidity >=0.7 < 0.9.0;
 contract Bridge {
 
     struct Message {
+        //uint256 nonce;
         uint256 messageId;
         address sender;
         string message;
@@ -15,7 +16,8 @@ contract Bridge {
     }
 
     // sending message
-    uint256 merkleTreeSize = 4;
+    uint256 messageBatchSize = 2;
+    uint256 merkleTreeHeight = 1;
     uint256 messageSentCounter;
     mapping(uint256 => Message) public messageSent;
     event MessageSent(uint256 indexed messageId, address sender, string message, uint256 messageIndex, bytes32[] proof, bytes32 root_hash);
@@ -42,16 +44,18 @@ contract Bridge {
             hash: messageHash
         });
 
-        if (messageSentCounter % merkleTreeSize == 0) {
-            bytes32[] memory hashes = new bytes32[](merkleTreeSize*2 - 1);
-            uint256 startIndex = messageSentCounter - (merkleTreeSize - 1);
+        if (messageSentCounter % messageBatchSize == 0) {
+            // take out hash from message struct
+            bytes32[] memory hashes = new bytes32[](messageBatchSize*2 - 1);
+            uint256 startIndex = messageSentCounter - (messageBatchSize - 1);
             uint256 hashIndex = 0;
             for (uint256 i = startIndex; i <= messageSentCounter; i++) {
                 hashes[hashIndex] = messageSent[i].hash;
                 hashIndex += 1;
             }
 
-            uint256 n = merkleTreeSize;
+            // compute the rest of the merkle tree
+            uint256 n = messageBatchSize;
             uint256 offset = 0;
 
             while (n > 0) {
@@ -65,12 +69,12 @@ contract Bridge {
 
             // Get proof for each message and emit MerkleRoot event
             for (uint256 i = startIndex; i <= messageSentCounter; i++) {
-                bytes32[] memory proof = new bytes32[](2);
+                bytes32[] memory proof = new bytes32[](merkleTreeHeight);
                 uint256 proofIndex = 0;
                 uint256 index = i - startIndex;
                 uint256 index2 = index;
 
-                n = merkleTreeSize;
+                n = messageBatchSize;
                 offset = 0;
 
                 while (index < hashes.length - 1) {
