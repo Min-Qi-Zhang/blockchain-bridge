@@ -16,7 +16,7 @@ const destContract = new ethers.Contract(DEST_CONTRACT_ADDRESS, BridgeContract.a
 const destContractWithSigner = destContract.connect(wallet);
 
 messageSent = []
-messageBatchSize = 2
+messageBatchSize = 4
 /**
  * Record every message sent
  */

@@ -16,8 +16,8 @@ contract Bridge {
     }
 
     // sending message
-    uint256 messageBatchSize = 2;
-    uint256 merkleTreeHeight = 1;
+    uint256 messageBatchSize = 4;
+    uint256 merkleTreeHeight = 2;
     uint256 messageSentCounter;
     mapping(uint256 => Message) public messageSent;
     event MessageSent(uint256 indexed messageId, address sender, string message, uint256 messageIndex, bytes32[] proof, bytes32 root_hash);
