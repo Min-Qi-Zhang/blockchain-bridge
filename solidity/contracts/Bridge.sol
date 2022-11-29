@@ -8,7 +8,6 @@ pragma solidity >=0.7 < 0.9.0;
 contract Bridge {
 
     struct Message {
-        //uint256 nonce;
         uint256 messageId;
         address sender;
         string message;
@@ -25,6 +24,7 @@ contract Bridge {
     mapping(uint256 => bytes32[]) public merkle_proof;
 
     // receiving message
+    uint256 messageReceivedCounter;
     mapping(uint256 => Message) public messageReceived;
     event MessageReceived(uint256 indexed messageId, address sender, string message);
 
@@ -132,6 +132,55 @@ contract Bridge {
             message: message,
             hash: messageHash
         });
+        messageReceivedCounter += 1;
         emit MessageReceived(messageId, sender, message);
+    }
+
+    /**
+     * @dev Return sent messages by filtered by address of sender.
+     */
+    function getSentMessageBySender() public view returns (Message[] memory) {
+        // Get array size
+        uint256 count = 0;
+        for (uint256 i = 1; i <= messageSentCounter; i++) {
+            if (messageSent[i].sender == msg.sender) {
+                count += 1;
+            }
+        }
+
+        Message[] memory filteredMessage = new Message[](count);
+        uint256 index = 0;
+        for (uint256 i = 1; i <= messageSentCounter; i++) {
+            Message memory message = messageSent[i];
+            if (message.sender == msg.sender) {
+                filteredMessage[index] = messageSent[i];
+                index += 1;
+            }
+        }
+        return filteredMessage;
+    }
+
+    /**
+     * @dev Return received messages by filtered by address of sender.
+     */
+    function getReceivedMessageBySender() public view returns (Message[] memory) {
+        // Get array size
+        uint256 count = 0;
+        for (uint256 i = 1; i <= messageReceivedCounter; i++) {
+            if (messageReceived[i].sender == msg.sender) {
+                count += 1;
+            }
+        }
+
+        Message[] memory filteredMessage = new Message[](count);
+        uint256 index = 0;
+        for (uint256 i = 1; i <= messageReceivedCounter; i++) {
+            Message memory message = messageReceived[i];
+            if (message.sender == msg.sender) {
+                filteredMessage[index] = messageReceived[i];
+                index += 1;
+            }
+        }
+        return filteredMessage;
     }
 }
