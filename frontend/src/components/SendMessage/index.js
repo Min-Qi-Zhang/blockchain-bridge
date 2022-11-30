@@ -29,13 +29,23 @@ class SendMessage extends Component {
         }
     };
 
-    componentDidMount = async () => {
+    updateNetwork = async () => {
         if (typeof window.ethereum !== 'undefined') {
             this.props.requestAccount();
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const network = await provider.getNetwork();
             this.setState({ network: network.name });
         }
+    };
+
+    componentDidMount = () => {
+        this.interval = setInterval(async () => {
+            await this.updateNetwork();
+        }, 2000);
+    };
+
+    componentWillUnmount = () => {
+        clearInterval(this.interval);
     };
 
     render() {

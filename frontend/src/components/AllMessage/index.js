@@ -34,15 +34,25 @@ class AllMessage extends Component {
         }
     };
 
-    componentDidMount = async () => {
+    updateNetwork = async () => {
         if (typeof window.ethereum !== 'undefined') {
             this.props.requestAccount();
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const network = await provider.getNetwork();
             this.setState({ network: network.name === 'goerli' ? 'Goerli' : 'Binance Testnet' });
-            await this.getMessages();
         }
-    }
+    };
+
+    componentDidMount = () => {
+        this.interval = setInterval(async () => {
+            await this.updateNetwork();
+            await this.getMessages();
+        }, 2000);
+    };
+
+    componentWillUnmount = () => {
+        clearInterval(this.interval);
+    };
 
     render() {
         return (
