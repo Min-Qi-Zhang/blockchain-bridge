@@ -1,25 +1,25 @@
-import logo from './logo.svg';
+import { Component } from 'react';
+import Bridge from './artifacts/contracts/Bridge.sol/Bridge.json';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import AllMessage from './components/AllMessage';
+
+const ethBridgeContractAddress = "0x828143b0Fa95204b9E7EFd956fdA85de054C3DB0";
+const bscBridgeContractAddress = "0x5c866850131346c878183d938572950dBB2d193B";
+
+class App extends Component {
+  requestAccount = async () => {
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+  };
+
+  render() {
+    return (
+      <div className="App">
+        <AllMessage ethBridgeContractAddress={ethBridgeContractAddress} bscBridgeContractAddress={bscBridgeContractAddress} bridgeAbi={Bridge.abi} requestAccount={this.requestAccount} />
+      </div>
+    );
+  }
 }
 
 export default App;
