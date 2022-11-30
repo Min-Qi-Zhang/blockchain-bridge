@@ -14,7 +14,7 @@ class MessageCard extends Component {
             <Card style={{ width: '10rem', margin: '5px' }}>
                 <Card.Body>
                     <Card.Title>ID: {this.props.message.messageId.toNumber()}</Card.Title>
-                    {this.props.message.message}
+                    <Card.Text>{this.props.message.message}</Card.Text>
                 </Card.Body>
             </Card>
         );

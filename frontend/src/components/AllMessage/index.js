@@ -57,7 +57,7 @@ class AllMessage extends Component {
     render() {
         return (
             <>
-                <h3>Sent Message On {this.state.network} </h3>
+                <h3>Messages Sent ({this.state.network}) </h3>
                 <div className="messages">
                     {this.state.messageSent.map((msg, i) => {
                         return (
@@ -66,7 +66,7 @@ class AllMessage extends Component {
                     })}
                 </div>
                 
-                <h3>Received Message On {this.state.network} </h3>
+                <h3>Messages Received ({this.state.network}) </h3>
                 <div className="messages">
                     {this.state.messageReceived.map((msg, i) => {
                         return (
@@ -75,7 +75,7 @@ class AllMessage extends Component {
                     })}
                 </div>
 
-                <Button onClick={() => this.getMessages()}>Get Messages</Button>
+                <Button onClick={() => this.getMessages()} variant="outline-dark">Refetch Messages</Button>
             </>
         );
     }

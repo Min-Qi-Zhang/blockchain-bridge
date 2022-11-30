@@ -13,7 +13,7 @@ class SendMessage extends Component {
     }
 
     sendMessage = async () => {
-        if (typeof window.ethereum !== 'undefined') {
+        if (typeof window.ethereum !== 'undefined' && this.state.message) {
             this.props.requestAccount();
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
@@ -50,14 +50,17 @@ class SendMessage extends Component {
 
     render() {
         return (
-            <div>
-                <h3>Send Message to {this.state.network === 'goerli' ? "Binance Testnet": "Goerli"}</h3>
-                <Form>
+            <div style={{padding: '20px'}}>
+                <h3>Send Message to {this.state.network === 'goerli' ? "Binance": "Goerli"}</h3>
+                <Form style={{textAlign: 'left'}}>
                     <Form.Group>
                         <Form.Label>Message</Form.Label>
                         <Form.Control onChange={(e) => this.setState({ message: e.target.value })}></Form.Control>
+                        <Form.Text className="text-muted">
+                            You are connecting to {this.state.network === 'goerli' ? "Goerli Testnet" : "Binance Testnet"}, the message will be sent to {this.state.network === 'goerli' ? "Binance Testnet": "Goerli Testnet"}.
+                        </Form.Text>
                     </Form.Group>
-                    <Button onClick={() => this.sendMessage()}>Submit</Button>
+                    <Button onClick={() => this.sendMessage()} variant="outline-dark">Send</Button>
                 </Form>
             </div>
         );
