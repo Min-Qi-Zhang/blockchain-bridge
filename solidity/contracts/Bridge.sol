@@ -133,6 +133,9 @@ contract Bridge {
             hash: messageHash
         });
         messageReceivedCounter += 1;
+        if (messageId > messageReceivedCounter) {
+            messageReceivedCounter = messageId;
+        }
         emit MessageReceived(messageId, sender, message);
     }
 

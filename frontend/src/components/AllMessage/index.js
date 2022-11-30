@@ -47,7 +47,6 @@ class AllMessage extends Component {
     render() {
         return (
             <>
-                <Button onClick={() => this.getMessages()}>Get Messages</Button>
                 <h3>Sent Message On {this.state.network} </h3>
                 <div className="messages">
                     {this.state.messageSent.map((msg, i) => {
@@ -65,6 +64,8 @@ class AllMessage extends Component {
                         );
                     })}
                 </div>
+
+                <Button onClick={() => this.getMessages()}>Get Messages</Button>
             </>
         );
     }
